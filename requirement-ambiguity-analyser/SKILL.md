@@ -1,98 +1,48 @@
-
 ---
 name: requirement-ambiguity-analyser
-description: Analyzes software requirements to identify ambiguity, incompleteness, inconsistency, and testability issues. Use when reviewing or refining software requirements before test case design.
+description: Analyses software requirements (BRD, SRS, user stories, acceptance criteria) and finds ambiguous, vague, incomplete, conflicting or untestable statements, then proposes measurable rewrites. Use this skill whenever the user asks to review, validate, clean up or "check quality of" requirements, or shares a BRD/SRS/user story and wants it tested before test design. Do NOT use for writing test cases or reviewing code.
 ---
 
 # Requirement Ambiguity Analyser
 
-## 1. Purpose
+Find requirement defects early, before they become test and code defects.
 
-This skill analyzes software requirements and identifies unclear, incomplete, vague, conflicting, and untestable statements.
+## When to Use
+- User shares a BRD, SRS, user story, feature description or acceptance criteria.
+- User asks: "review requirements", "find ambiguity", "is this testable?", "static testing of SRS".
 
-Its goal is to improve requirement quality before software development and testing.
+## Instructions
+1. Split the input into individual requirements. Assign an ID (use the original ID if present, else R1, R2, ...).
+2. Check every requirement against these defect types:
+   - **Vague term**: fast, easy, user-friendly, secure, efficient, appropriate, etc., and so on, as needed.
+   - **Missing quantification**: no number, unit, limit or threshold.
+   - **Incomplete**: missing actor, trigger, condition, data, error case or boundary.
+   - **Ambiguous reference**: unclear "it", "they", "the system", passive voice without actor.
+   - **Conflict**: contradicts another requirement or the stated scope.
+   - **Untestable**: no objective pass/fail criterion.
+   - **Compound**: several requirements joined by "and/or" in one statement.
+3. Rate severity: **High** (blocks testing or causes wrong build), **Medium**, **Low**.
+4. Write a measurable rewrite for each defect. Never invent business facts; if a value is unknown, mark it `[TBD - confirm with stakeholder]`.
+5. List clarification questions for the BA/stakeholder.
 
-## 2. When to Use
+## Optional Helper Script
+Run `python scripts/ambiguity_scan.py <requirements.txt>` for a fast first-pass list of vague words, then add judgement-based findings (conflicts, missing conditions).
 
-Use this skill when:
-- Reviewing software requirement documents.
-- Analyzing SRS or BRD documents.
-- Identifying ambiguous requirement statements.
-- Improving unclear requirements.
-- Preparing requirements for test case generation.
+## Output Format
+### 1. Summary
+Total requirements reviewed, defects found, count by severity.
 
-## 3. Input Requirements
+### 2. Defect Table
+| Req ID | Original Statement | Defect Type | Why It Is a Problem | Severity | Suggested Rewrite |
+|---|---|---|---|---|---|
 
-The user may provide:
-- Individual requirement statements.
-- SRS documents.
-- BRD documents.
-- Functional requirements.
-- Non-functional requirements.
+### 3. Clarification Questions
+Numbered list, each linked to a Req ID.
 
-If no requirement is provided, ask the user to share one.
+### 4. Testability Verdict
+One line per requirement: Testable / Needs Clarification / Untestable.
 
-## 4. Analysis Instructions
-
-Follow these steps:
-
-1. Read and understand each requirement.
-2. Identify vague words such as "fast", "easy", "user-friendly", and "appropriate".
-3. Check whether the requirement is complete.
-4. Identify missing conditions, values, and expected outcomes.
-5. Check for conflicting statements.
-6. Evaluate whether the requirement is measurable and testable.
-7. Explain why each identified issue is problematic.
-8. Suggest an improved version of each unclear requirement.
-9. Do not invent missing business rules or assumptions.
-
-## 5. Ambiguity Categories
-
-Analyze requirements using these categories:
-
-- Vagueness: Unclear or subjective wording.
-- Incompleteness: Missing information.
-- Inconsistency: Conflicting requirements.
-- Unverifiability: Cannot be objectively tested.
-- Multiple Interpretations: Can be understood in different ways.
-
-## 6. Output Format
-
-Present the results in a table:
-
-| Requirement ID | Original Requirement | Issue Type | Explanation | Suggested Improvement |
-
-After the table, provide:
-- Total requirements analyzed.
-- Total issues identified.
-- High-priority issues.
-- Clarification questions for stakeholders.
-
-## 7. Quality Rules
-
-- Preserve the original meaning.
-- Use clear and simple language.
-- Make suggestions measurable and testable.
-- Never assume missing business rules.
-- Explain uncertainty explicitly.
-
-## 8. Error Handling
-
-- If requirements are missing, ask for input.
-- If a requirement is incomplete, identify the missing information.
-- If conflicting requirements exist, report both statements.
-- If context is insufficient, ask clarification questions.
-
-## 9. Example
-
-Input:
-"The system should respond quickly to user requests."
-
-Analysis:
-- Issue Type: Vagueness.
-- Explanation: "Quickly" does not define an acceptable response time.
-
-Suggested Improvement:
-"The system shall respond to 95% of user requests within 2 seconds under the specified normal workload."
-
-Note: The proposed threshold is an example and must be confirmed by stakeholders.
+## Rules
+- Quote the exact problem words from the original text.
+- Report only real defects; do not pad the table.
+- If no requirement text is provided, ask the user to paste or upload it.
